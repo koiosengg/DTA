@@ -6,14 +6,14 @@ import Learn from "@/components/Home/Learn";
 import MartialArts from "@/components/Home/MartialArts";
 import Journey from "@/components/Home/Journey";
 import Timings from "@/components/Home/Timings";
-import Moments from "@/components/Home/Moments";
+import PhotoScrollSection from "@/components/Home/PhotoScrollSection";
 import Testimonial from "@/components/Home/Testimonial";
 import aboutBannerImg from "@/public/assets/About/Banner/AboutBanner.jpg";
 import HorizontalScroll from "@/components/HorizontalScroll";
 
 export default function About() {
   return (
-    <div className="relative isolate overflow-hidden bg-primary transition-colors duration-300">
+    <div className="relative isolate overflow-x-clip bg-primary transition-colors duration-300">
       {/* Banner Section */}
       <Banner
         title={<>More than Martial Arts, a</>}
@@ -38,7 +38,7 @@ export default function About() {
       <MartialArts />
       <Journey />
       <Timings />
-      <Moments />
+      <PhotoScrollSection />
       <Testimonial />
     </div>
   );

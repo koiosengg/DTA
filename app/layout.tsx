@@ -27,8 +27,7 @@ const sora = Sora({
 
 export const metadata: Metadata = {
   title: "DTA",
-  description:
-    "Modern digital and technology analytics delivering cutting-edge performance insights and high-fidelity reporting.",
+  description: " ",
 };
 
 export default function RootLayout({
