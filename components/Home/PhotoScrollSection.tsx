@@ -1,8 +1,7 @@
 "use client";
 
-import React, { useState, useEffect, useRef, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import Image, { StaticImageData } from "next/image";
-import Link from "next/link";
 
 // Assets from moments library
 import img1 from "@/public/assets/Home/Moments/Image1.webp";
@@ -101,36 +100,29 @@ const GALLERY_PHOTOS: GalleryPhoto[] = [
 interface PhotoScrollSectionProps {
   title?: React.ReactNode;
   subtitle?: string;
-  viewMoreLink?: string;
   photos?: GalleryPhoto[];
+  className?: string;
 }
 
 export default function PhotoScrollSection({
-  title = (
-    <>
-      Moments of Discipline <br />
-      and Achievement
-    </>
-  ),
+  title = "Moments of Discipline and Achievement",
   subtitle = "Expert-led training in Taekwondo, self-defence, poomsae, kyorugi, fitness, and gymnastics tailored for kids, teens, adults, and working professionals.",
   photos = GALLERY_PHOTOS,
+  className = "",
 }: PhotoScrollSectionProps) {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const [scrollProgress, setScrollProgress] = useState<number>(0);
   const [activeSlide, setActiveSlide] = useState<number>(0);
-  const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
-  const [isMobile, setIsMobile] = useState<boolean>(false);
+  const touchStartX = useRef<number | null>(null);
 
-  useEffect(() => {
-    const handleResize = () => {
-      setIsMobile(window.innerWidth < 1024);
-    };
-    handleResize();
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
+  const total = photos.length;
+  const centerIdx = activeSlide % total;
+  const left1Idx = (activeSlide - 1 + total) % total;
+  const left2Idx = (activeSlide - 2 + total) % total;
+  const right1Idx = (activeSlide + 1) % total;
+  const right2Idx = (activeSlide + 2) % total;
 
-  // Smooth scroll tracking inside the section container
+  // Track scroll inside the section for the fan-out animation
   useEffect(() => {
     let animationFrameId: number;
 
@@ -140,7 +132,10 @@ export default function PhotoScrollSection({
       const totalScrollDistance =
         containerRef.current.offsetHeight - window.innerHeight;
 
-      if (totalScrollDistance <= 0) return;
+      if (totalScrollDistance <= 0) {
+        setScrollProgress(1);
+        return;
+      }
 
       const currentScroll = -rect.top;
       const progress = Math.min(
@@ -162,101 +157,86 @@ export default function PhotoScrollSection({
     };
   }, []);
 
-  // Stage 1 (0.00 -> 0.18): Fan out flanking cards left and right (fast)
-  const fanOutProgress = Math.min(Math.max(scrollProgress / 0.18, 0), 1);
-
-  // HOLD (0.18 -> 0.48): All 5 cards stay spread — nothing changes during this window
-
-  // Stage 2 (0.48 -> 0.68): Expanding center card to full gallery width
-  const expandProgress = Math.min(
-    Math.max((scrollProgress - 0.48) / 0.2, 0),
-    1,
-  );
-
-  // Stage 3 (0.65 -> 0.85): Gallery UI overlay (arrows, caption, thumbnails) fully interactive
-  const galleryUiOpacity = Math.min(
-    Math.max((scrollProgress - 0.65) / 0.15, 0),
-    1,
-  );
-
-  // Flanking cards opacity and lateral fan-out
-  const flankingOpacity = Math.max(
-    0,
-    fanOutProgress * (1 - expandProgress * 2),
-  );
-  // Offsets computed from actual card widths + 20px gap so cards never overlap:
-  // center half=170, L1/R1 half=125, L2/R2 half=90
-  // L1: -(170+20+125)=-315, L2: -(170+20+250+20+90)=-550
-  const left1Offset = -315 * fanOutProgress - expandProgress * 420;
-  const right1Offset = 315 * fanOutProgress + expandProgress * 420;
-  const left2Offset = -550 * fanOutProgress - expandProgress * 580;
-  const right2Offset = 550 * fanOutProgress + expandProgress * 580;
+  // Fast fan-out in the first 25% of scroll
+  const fanOutProgress = Math.min(Math.max(scrollProgress / 0.25, 0), 1);
 
   const nextSlide = useCallback(() => {
-    setActiveSlide((prev) => (prev + 1) % photos.length);
-  }, [photos.length]);
+    setActiveSlide((prev) => Math.min(total - 1, prev + 1));
+  }, [total]);
 
   const prevSlide = useCallback(() => {
-    setActiveSlide((prev) => (prev - 1 + photos.length) % photos.length);
-  }, [photos.length]);
+    setActiveSlide((prev) => Math.max(0, prev - 1));
+  }, []);
 
-  // Keyboard controls
+  // Keyboard navigation
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "ArrowRight") nextSlide();
       if (e.key === "ArrowLeft") prevSlide();
-      if (e.key === "Escape") setLightboxIndex(null);
     };
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [nextSlide, prevSlide]);
 
+  // Touch swipe support for mobile
+  const handleTouchStart = (e: React.TouchEvent) => {
+    touchStartX.current = e.touches[0].clientX;
+  };
+
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    if (touchStartX.current === null) return;
+    const diff = touchStartX.current - e.changedTouches[0].clientX;
+    if (diff > 45) nextSlide();
+    else if (diff < -45) prevSlide();
+    touchStartX.current = null;
+  };
+
   return (
     <section
       ref={containerRef}
       id="photo-showcase"
-      className="relative w-full bg-white text-[#111111] overflow-visible select-none"
-      style={{ height: isMobile ? "auto" : "420vh" }}
+      className={`relative w-full h-auto md:h-[115vh] bg-white select-none overflow-visible ${className}`}
     >
-      {/* DESKTOP VIEW: PINNED INTERACTIVE CONTAINER */}
-      {!isMobile ? (
-        <div
-          className="sticky top-0 h-screen w-full overflow-hidden flex flex-col justify-between bg-white"
-          style={{ padding: "120px 80px" }}
-        >
-          {/* Subtle dot grid */}
-          <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(#d1d5db_1px,transparent_1px)] bg-size-[24px_24px] opacity-40" />
-
+      {/* Sticky Fullscreen Container */}
+      <div className="relative md:sticky top-0 h-auto md:h-screen w-full overflow-hidden flex flex-col items-center justify-between bg-white py-14 px-5 lg:py-30 lg:px-20">
+        <div className="w-full max-w-7xl flex-1 flex flex-col justify-start md:justify-between gap-10 md:gap-16">
           {/* Header Block */}
-          <div className="relative z-40 w-full max-w-7xl mx-auto flex flex-col lg:flex-row justify-between items-start gap-6 text-left">
-            <h2 className="text-[36px] lg:text-[56px] font-bold text-primary tracking-[-1.44px] lg:tracking-tight font-sora leading-[1.1] sm:self-start">
+          <div className="w-full flex flex-col lg:flex-row justify-between items-start gap-4 md:gap-6 text-left">
+            <h2 className="text-[32px] sm:text-[36px] lg:text-[56px] font-bold text-primary tracking-[-1.44px] lg:tracking-tight font-sora leading-[1.15]">
               {title}
             </h2>
             {subtitle && (
-              <p className="text-[14px] lg:text-[16px] text-secondary leading-relaxed font-primary font-normal max-w-150 sm:self-start">
+              <p className="text-[14px] lg:text-[16px] text-secondary leading-relaxed font-primary font-normal max-w-150">
                 {subtitle}
               </p>
             )}
           </div>
 
-          {/* FLANKING CARDS (LEFT 2, LEFT 1, RIGHT 1, RIGHT 2) */}
-          {flankingOpacity > 0.01 && (
-            <div className="absolute inset-0 z-10 flex items-center justify-center pointer-events-none">
-              {/* Left 2 */}
+          {/* Responsive Fanned-Out Card Slider Stage */}
+          <div
+            className="w-full flex flex-col items-center gap-12 md:gap-12"
+            onTouchStart={handleTouchStart}
+            onTouchEnd={handleTouchEnd}
+          >
+            {/* Card Carousel Viewport */}
+            <div className="relative w-full h-90 sm:h-105 md:h-115 lg:h-125 flex items-center justify-center overflow-hidden">
+              {/* Left 2 (Visible on tablet & desktop >= md) */}
               <div
-                className="absolute overflow-hidden rounded-xl shadow-xl bg-zinc-200 border border-black/10"
+                onClick={() => setActiveSlide(left2Idx)}
+                className="hidden md:block absolute overflow-hidden rounded-xl lg:rounded-2xl bg-zinc-200 border border-black/10 transition-all duration-300 ease-out cursor-pointer hover:scale-95 z-0"
                 style={{
-                  width: "180px",
-                  height: "270px",
+                  width: "min(20vw, 180px)",
+                  height: "min(30vw, 270px)",
                   left: "50%",
-                  top: "56%",
-                  transform: `translate(calc(-50% + ${left2Offset}px), -50%) scale(0.92)`,
-                  opacity: flankingOpacity,
+                  top: "50%",
+                  transform: `translate(calc(-50% - min(43vw, 540px) * ${fanOutProgress}), -50%) scale(0.92)`,
+                  opacity: 0.7 * fanOutProgress,
                 }}
               >
                 <Image
-                  src={photos[4]?.src || img19}
-                  alt="Left 2 photo"
+                  key={`left2-${left2Idx}`}
+                  src={photos[left2Idx]?.src || img19}
+                  alt={photos[left2Idx]?.title || "Left 2 photo"}
                   fill
                   className="object-cover"
                   sizes="180px"
@@ -265,353 +245,149 @@ export default function PhotoScrollSection({
 
               {/* Left 1 */}
               <div
-                className="absolute overflow-hidden rounded-xl shadow-2xl bg-zinc-200 border border-black/10"
+                onClick={() => setActiveSlide(left1Idx)}
+                className="absolute overflow-hidden rounded-xl sm:rounded-2xl shadow-xl lg:shadow-2xl bg-zinc-200 border border-black/10 transition-all duration-300 ease-out cursor-pointer hover:scale-100 z-10"
                 style={{
-                  width: "250px",
-                  height: "380px",
+                  width: "min(32vw, 250px)",
+                  height: "min(48vw, 380px)",
                   left: "50%",
-                  top: "56%",
-                  transform: `translate(calc(-50% + ${left1Offset}px), -50%) scale(0.96)`,
-                  opacity: flankingOpacity,
+                  top: "50%",
+                  transform: `translate(calc(-50% - min(28vw, 310px) * ${fanOutProgress}), -50%) scale(0.96)`,
+                  opacity: 0.88 * fanOutProgress,
                 }}
               >
                 <Image
-                  src={photos[1]?.src || img6}
-                  alt="Left 1 photo"
+                  key={`left1-${left1Idx}`}
+                  src={photos[left1Idx]?.src || img6}
+                  alt={photos[left1Idx]?.title || "Left 1 photo"}
                   fill
                   className="object-cover"
                   sizes="250px"
+                />
+              </div>
+
+              {/* Main Center Card */}
+              <div
+                className="relative overflow-hidden rounded-2xl sm:rounded-3xl bg-zinc-200 border border-black/10 transition-all duration-300 ease-out z-20"
+                style={{
+                  width: "min(48vw, 340px)",
+                  height: "min(70vw, 480px)",
+                }}
+              >
+                <Image
+                  key={`center-${centerIdx}`}
+                  src={photos[centerIdx]?.src || img1}
+                  alt={photos[centerIdx]?.title || "Center photo"}
+                  fill
+                  priority
+                  className="object-cover object-center"
+                  sizes="(max-width: 768px) 50vw, 340px"
                 />
               </div>
 
               {/* Right 1 */}
               <div
-                className="absolute overflow-hidden rounded-xl shadow-2xl bg-zinc-200 border border-black/10"
+                onClick={() => setActiveSlide(right1Idx)}
+                className="absolute overflow-hidden rounded-xl sm:rounded-2xl shadow-xl lg:shadow-2xl bg-zinc-200 border border-black/10 transition-all duration-300 ease-out cursor-pointer hover:scale-100 z-10"
                 style={{
-                  width: "250px",
-                  height: "380px",
+                  width: "min(32vw, 250px)",
+                  height: "min(48vw, 380px)",
                   left: "50%",
-                  top: "56%",
-                  transform: `translate(calc(-50% + ${right1Offset}px), -50%) scale(0.96)`,
-                  opacity: flankingOpacity,
+                  top: "50%",
+                  transform: `translate(calc(-50% + min(28vw, 310px) * ${fanOutProgress}), -50%) scale(0.96)`,
+                  opacity: 0.88 * fanOutProgress,
                 }}
               >
                 <Image
-                  src={photos[3]?.src || img14}
-                  alt="Right 1 photo"
+                  key={`right1-${right1Idx}`}
+                  src={photos[right1Idx]?.src || img14}
+                  alt={photos[right1Idx]?.title || "Right 1 photo"}
                   fill
                   className="object-cover"
                   sizes="250px"
                 />
               </div>
 
-              {/* Right 2 */}
+              {/* Right 2 (Visible on tablet & desktop >= md) */}
               <div
-                className="absolute overflow-hidden rounded-xl shadow-xl bg-zinc-200 border border-black/10"
+                onClick={() => setActiveSlide(right2Idx)}
+                className="hidden md:block absolute overflow-hidden rounded-xl lg:rounded-2xl shadow-xl bg-zinc-200 border border-black/10 transition-all duration-300 ease-out cursor-pointer hover:scale-95 z-0"
                 style={{
-                  width: "180px",
-                  height: "270px",
+                  width: "min(20vw, 180px)",
+                  height: "min(30vw, 270px)",
                   left: "50%",
-                  top: "56%",
-                  transform: `translate(calc(-50% + ${right2Offset}px), -50%) scale(0.92)`,
-                  opacity: flankingOpacity,
+                  top: "50%",
+                  transform: `translate(calc(-50% + min(43vw, 540px) * ${fanOutProgress}), -50%) scale(0.92)`,
+                  opacity: 0.7 * fanOutProgress,
                 }}
               >
                 <Image
-                  src={photos[5]?.src || img24}
-                  alt="Right 2 photo"
+                  key={`right2-${right2Idx}`}
+                  src={photos[right2Idx]?.src || img24}
+                  alt={photos[right2Idx]?.title || "Right 2 photo"}
                   fill
                   className="object-cover"
                   sizes="180px"
                 />
               </div>
             </div>
-          )}
 
-          {/* MAIN PHOTO STAGE (Morphs from Center Card into Full Interactive Gallery) */}
-          <div
-            className="relative z-20 flex-1 w-full max-w-7xl mx-auto flex flex-col justify-center items-center"
-            style={{ marginTop: "64px" }}
-          >
-            <div
-              className="relative overflow-hidden rounded-3xl shadow-[0_25px_60px_-15px_rgba(0,0,0,0.35)] bg-black border border-black/10 transition-all duration-300 ease-out"
-              style={{
-                width: `${340 + expandProgress * 940}px`,
-                height: `${500 + expandProgress * 140}px`,
-                maxWidth: "94vw",
-                maxHeight: "66vh",
-              }}
-            >
-              {/* Photo Slides with smooth crossfade */}
-              {photos.map((photo, idx) => (
-                <div
-                  key={photo.id}
-                  className={`absolute inset-0 transition-opacity duration-700 ease-in-out ${
-                    idx === activeSlide
-                      ? "opacity-100 z-10"
-                      : "opacity-0 z-0 pointer-events-none"
-                  }`}
-                >
-                  <Image
-                    src={photo.src}
-                    alt={photo.title}
-                    fill
-                    priority={idx === 0}
-                    className="object-cover object-center transform scale-100 hover:scale-105 transition-transform duration-700 ease-out cursor-pointer"
-                    onClick={() => setLightboxIndex(idx)}
-                    sizes="(max-width: 1280px) 95vw, 1200px"
-                  />
-                  {/* Gradient Overlay for Readability */}
-                  <div className="absolute inset-0 bg-linear-to-t from-black/85 via-black/25 to-transparent pointer-events-none" />
-                </div>
-              ))}
-
-              {/* Prev / Next Buttons (Appear when expanded) */}
-              <div
-                className="transition-opacity duration-300"
-                style={{
-                  opacity: galleryUiOpacity,
-                  pointerEvents: galleryUiOpacity > 0.5 ? "auto" : "none",
-                }}
-              >
-                <button
-                  type="button"
-                  onClick={prevSlide}
-                  aria-label="Previous Photo"
-                  className="absolute left-6 top-1/2 -translate-y-1/2 z-30 w-12 h-12 rounded-full bg-black/50 hover:bg-red-600 text-white border border-white/20 backdrop-blur flex items-center justify-center transition-all duration-200 transform hover:scale-110 active:scale-95"
-                >
-                  <svg
-                    className="w-5 h-5"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2.5}
-                      d="M15 19l-7-7 7-7"
-                    />
-                  </svg>
-                </button>
-
-                <button
-                  type="button"
-                  onClick={nextSlide}
-                  aria-label="Next Photo"
-                  className="absolute right-6 top-1/2 -translate-y-1/2 z-30 w-12 h-12 rounded-full bg-black/50 hover:bg-red-600 text-white border border-white/20 backdrop-blur flex items-center justify-center transition-all duration-200 transform hover:scale-110 active:scale-95"
-                >
-                  <svg
-                    className="w-5 h-5"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2.5}
-                      d="M9 5l7 7-7 7"
-                    />
-                  </svg>
-                </button>
-
-                {/* Bottom Right Interactive Thumbnail Strip */}
-                <div className="absolute bottom-6 right-6 lg:bottom-8 lg:right-8 z-30 flex items-center gap-3 p-2 rounded-2xl bg-black/60 border border-white/10 backdrop-blur-md">
-                  {photos.slice(0, 5).map((photo, thumbIdx) => {
-                    const isActive = thumbIdx === activeSlide;
-                    return (
-                      <button
-                        key={photo.id}
-                        type="button"
-                        onClick={() => setActiveSlide(thumbIdx)}
-                        aria-label={`Select photo ${thumbIdx + 1}`}
-                        className={`relative w-16 h-11 lg:w-20 lg:h-14 rounded-lg overflow-hidden border-2 transition-all duration-200 shrink-0 ${
-                          isActive
-                            ? "border-red-500 scale-105 shadow-[0_0_12px_rgba(220,38,38,0.7)]"
-                            : "border-white/20 opacity-60 hover:opacity-100 hover:border-white/60"
-                        }`}
-                      >
-                        <Image
-                          src={photo.src}
-                          alt={photo.title}
-                          fill
-                          className="object-cover"
-                          sizes="80px"
-                        />
-                      </button>
-                    );
-                  })}
-
-                  {/* Counter */}
-                  <div className="px-3 py-1 font-mono text-xs font-semibold text-zinc-300">
-                    <span className="text-white font-bold text-sm">
-                      {String(activeSlide + 1).padStart(2, "0")}
-                    </span>
-                    <span className="mx-1 text-zinc-500">/</span>
-                    <span>{String(photos.length).padStart(2, "0")}</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      ) : (
-        /* MOBILE VIEW: SLEEK TOUCH CAROUSEL */
-        <div className="w-full py-16 px-4 sm:px-6 bg-white">
-          <div className="w-full flex flex-col justify-between items-start gap-4 mb-8 text-left">
-            <h2 className="text-[32px] sm:text-[36px] font-bold text-primary tracking-[-1.44px] font-sora leading-[1.1]">
-              {title}
-            </h2>
-            {subtitle && (
-              <p className="text-[14px] text-secondary leading-relaxed font-primary font-normal">
-                {subtitle}
-              </p>
-            )}
-          </div>
-
-          <div className="relative w-full aspect-4/3 rounded-2xl overflow-hidden shadow-xl bg-black mb-4">
-            <Image
-              src={photos[activeSlide]?.src || img1}
-              alt={photos[activeSlide]?.title || "Gallery Photo"}
-              fill
-              className="object-cover"
-              onClick={() => setLightboxIndex(activeSlide)}
-            />
-            <div className="absolute inset-0 bg-linear-to-t from-black/80 via-transparent to-transparent" />
-            <div className="absolute bottom-4 left-4 right-4 text-white">
-              <span className="inline-block bg-red-600 text-[10px] font-bold px-2.5 py-0.5 rounded uppercase tracking-wider mb-1.5">
-                {photos[activeSlide]?.category}
-              </span>
-              <h3 className="text-lg font-bold font-sora line-clamp-1">
-                {photos[activeSlide]?.title}
-              </h3>
-              <p className="text-xs text-zinc-300 line-clamp-1 mt-0.5">
-                {photos[activeSlide]?.subtitle}
-              </p>
-            </div>
-
-            <button
-              type="button"
-              onClick={prevSlide}
-              className="absolute left-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-black/60 text-white flex items-center justify-center active:scale-90"
-            >
-              <svg
-                className="w-4 h-4"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2.5}
-                  d="M15 19l-7-7 7-7"
-                />
-              </svg>
-            </button>
-            <button
-              type="button"
-              onClick={nextSlide}
-              className="absolute right-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-black/60 text-white flex items-center justify-center active:scale-90"
-            >
-              <svg
-                className="w-4 h-4"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2.5}
-                  d="M9 5l7 7-7 7"
-                />
-              </svg>
-            </button>
-          </div>
-
-          <div className="flex gap-2.5 overflow-x-auto pb-2 pt-1 no-scrollbar">
-            {photos.map((photo, idx) => (
+            {/* Navigation Arrows at Bottom Center */}
+            <div className="flex justify-center items-center gap-1">
               <button
-                key={photo.id}
-                type="button"
-                onClick={() => setActiveSlide(idx)}
-                className={`relative w-20 h-14 rounded-lg overflow-hidden shrink-0 border-2 transition-all ${
-                  idx === activeSlide
-                    ? "border-red-600 scale-105"
-                    : "border-zinc-200 opacity-60"
+                onClick={prevSlide}
+                disabled={activeSlide <= 0}
+                className={`w-10 h-10 rounded-lg border flex items-center justify-center transition-colors ${
+                  activeSlide <= 0
+                    ? "border-zinc-200 text-zinc-300"
+                    : "border-zinc-300 text-primary hover:bg-zinc-50 cursor-pointer"
                 }`}
+                aria-label="Previous slide"
               >
-                <Image
-                  src={photo.src}
-                  alt={photo.title}
-                  fill
-                  className="object-cover"
-                />
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <line x1="19" y1="12" x2="5" y2="12" />
+                  <polyline points="12 19 5 12 12 5" />
+                </svg>
               </button>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* LIGHTBOX MODAL */}
-      {lightboxIndex !== null && (
-        <div
-          className="fixed inset-0 z-50 bg-black/95 backdrop-blur-lg flex items-center justify-center p-4 lg:p-10"
-          onClick={() => setLightboxIndex(null)}
-        >
-          <button
-            type="button"
-            onClick={() => setLightboxIndex(null)}
-            className="absolute top-6 right-6 z-50 text-white hover:text-red-500 bg-white/10 hover:bg-white/20 rounded-full w-12 h-12 flex items-center justify-center backdrop-blur transition-all"
-            aria-label="Close Lightbox"
-          >
-            <svg
-              className="w-6 h-6"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M6 18L18 6M6 6l12 12"
-              />
-            </svg>
-          </button>
-
-          <div
-            className="relative w-full max-w-5xl max-h-[85vh] aspect-16/10 rounded-2xl overflow-hidden shadow-2xl border border-white/20"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <Image
-              src={photos[lightboxIndex]?.src || img1}
-              alt={photos[lightboxIndex]?.title || "Full photo view"}
-              fill
-              className="object-contain bg-black"
-            />
-            <div className="absolute bottom-0 inset-x-0 bg-linear-to-t from-black/90 via-black/50 to-transparent p-6 text-white flex items-end justify-between">
-              <div>
-                <span className="text-xs bg-red-600 px-2.5 py-1 rounded font-bold uppercase tracking-wider inline-block mb-2">
-                  {photos[lightboxIndex]?.category}
-                </span>
-                <h4 className="text-xl lg:text-2xl font-bold font-sora">
-                  {photos[lightboxIndex]?.title}
-                </h4>
-                <p className="text-sm text-zinc-300 mt-1">
-                  {photos[lightboxIndex]?.subtitle}
-                </p>
-              </div>
-              <div className="text-right font-mono text-xs text-zinc-400">
-                {String(lightboxIndex + 1).padStart(2, "0")} /{" "}
-                {String(photos.length).padStart(2, "0")}
-              </div>
+              <button
+                onClick={nextSlide}
+                disabled={activeSlide >= total - 1}
+                className={`w-10 h-10 rounded-lg border flex items-center justify-center transition-colors ${
+                  activeSlide >= total - 1
+                    ? "border-zinc-200 text-zinc-300"
+                    : "border-zinc-300 text-primary hover:bg-zinc-50 cursor-pointer"
+                }`}
+                aria-label="Next slide"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <line x1="5" y1="12" x2="19" y2="12" />
+                  <polyline points="12 5 19 12 12 19" />
+                </svg>
+              </button>
             </div>
           </div>
         </div>
-      )}
+      </div>
     </section>
   );
 }

@@ -2,8 +2,8 @@
 
 import Image from "next/image";
 import image1 from "@/public/assets/Home/Stats/image 1.webp";
-import image2 from "@/public/assets/Home/Stats/image 2.webp";
-import image3 from "@/public/assets/Home/Stats/image 3.webp";
+import image2 from "@/public/assets/Home/Stats/image 2.png";
+import image3 from "@/public/assets/Home/Stats/image 3.png";
 
 export default function Stats() {
   return (
@@ -45,9 +45,9 @@ export default function Stats() {
             {/* Column 2: Two Stacked Cards */}
             <div className="flex flex-col gap-5">
               {/* Card 2: Happy Students */}
-              <div className="bg-[#F9F9F9] border border-[#D6D6D6] rounded-lg px-4 py-2.5 flex flex-col items-start lg:w-76.25 md:h-46.75 gap-3.5 w-full h-auto">
+              <div className="bg-[#F9F9F9] border border-[#D6D6D6] rounded-lg px-4 py-2.5 flex flex-row items-center lg:w-76.25 md:h-46.75 gap-3.5 w-full h-auto">
                 {/* Happy Student Image */}
-                <div className="mb-4">
+                <div className="shrink-0">
                   <Image
                     src={image2}
                     alt="10,000+ Happy Students"
@@ -64,9 +64,9 @@ export default function Stats() {
               </div>
 
               {/* Card 3: Location */}
-              <div className="bg-[#F9F9F9] border border-[#D6D6D6] rounded-lg px-4 py-2.5 flex flex-col items-start lg:w-76.25 md:h-46.75 gap-3.5 w-full h-auto">
+              <div className="bg-[#F9F9F9] border border-[#D6D6D6] rounded-lg px-4 py-2.5 flex flex-row items-center lg:w-76.25 md:h-46.75 gap-3.5 w-full h-auto">
                 {/* Location/Building Image */}
-                <div className="mb-4">
+                <div className="shrink-0">
                   <Image
                     src={image3}
                     alt="Located in Shantinagar, Bangalore"

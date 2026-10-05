@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import Link from "next/link";
 
 interface TimingsProps {
   title?: React.ReactNode;
@@ -24,8 +25,8 @@ export default function Timings({
   ];
 
   return (
-    <section className="w-full bg-white py-20 lg:py-30 px-5 md:px-12 lg:px-20 overflow-hidden font-primary">
-      <div className="w-full max-w-7xl mx-auto flex flex-col gap-18.5 lg:gap-15">
+    <section className="w-full bg-white py-14 lg:py-30 px-5 md:px-12 lg:px-20 overflow-hidden font-primary flex">
+      <div className="w-full max-w-7xl flex flex-col gap-18.5 lg:gap-15">
         {/* Header Block */}
         <div className="flex flex-col gap-2 text-left">
           <h2 className="text-[36px] lg:text-[56px] font-bold text-primary tracking-[-1.44px] lg:tracking-tight font-sora leading-[1.15]">
@@ -45,7 +46,10 @@ export default function Timings({
           {/* Cards Grid */}
           <div className="w-full grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-5 items-stretch">
             {/* Card 1: Adult Fitness Classes */}
-            <div className="flex flex-col gap-6 text-center bg-[#F2F2F2] border border-[#D6D6D6] rounded-lg p-6 sm:p-8 justify-start transition-colors duration-300 hover:bg-[#FBE9E9] hover:border-[#EC989B]">
+            <Link
+              href="/contact"
+              className="flex flex-col gap-6 text-center bg-[#F2F2F2] border border-[#D6D6D6] rounded-lg p-6 sm:p-8 justify-start transition-colors duration-300 hover:bg-[#FBE9E9] hover:border-[#EC989B] cursor-pointer"
+            >
               <div className="flex flex-col gap-1.5 items-center">
                 <h3 className="text-xl sm:text-2xl font-bold text-primary font-primary">
                   Adult Fitness Classes
@@ -61,10 +65,13 @@ export default function Timings({
                   07:00 AM – 09:00 AM
                 </span>
               </div>
-            </div>
+            </Link>
 
             {/* Card 2: Taekwondo Classes */}
-            <div className="flex flex-col gap-6 text-center bg-[#F2F2F2] border border-[#D6D6D6] rounded-lg p-6 sm:p-8 justify-start transition-colors duration-300 hover:bg-[#FBE9E9] hover:border-[#EC989B]">
+            <Link
+              href="/contact"
+              className="flex flex-col gap-6 text-center bg-[#F2F2F2] border border-[#D6D6D6] rounded-lg p-6 sm:p-8 justify-start transition-colors duration-300 hover:bg-[#FBE9E9] hover:border-[#EC989B] cursor-pointer"
+            >
               <div className="flex flex-col gap-1.5 items-center">
                 <h3 className="text-xl sm:text-2xl font-bold text-primary font-primary">
                   Taekwondo Classes
@@ -80,10 +87,13 @@ export default function Timings({
                   06:00 AM – 07:00 AM
                 </span>
               </div>
-            </div>
+            </Link>
 
             {/* Card 3: Evening Batch Classes */}
-            <div className="flex flex-col gap-6 text-center bg-[#F2F2F2] border border-[#D6D6D6] rounded-xl p-6 sm:p-8 justify-between transition-all duration-300 hover:bg-[#FBE9E9] hover:border-[#EC989B]">
+            <Link
+              href="/contact"
+              className="flex flex-col gap-6 text-center bg-[#F2F2F2] border border-[#D6D6D6] rounded-xl p-6 sm:p-8 justify-between transition-all duration-300 hover:bg-[#FBE9E9] hover:border-[#EC989B] cursor-pointer"
+            >
               <div className="flex flex-col gap-1.5 items-center">
                 <h3 className="text-xl sm:text-2xl font-bold text-primary font-primary">
                   Evening Batch Classes
@@ -119,7 +129,12 @@ export default function Timings({
 
                 {/* View All Timing CTA */}
                 <button
-                  onClick={() => setShowAllEvening(!showAllEvening)}
+                  type="button"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    setShowAllEvening(!showAllEvening);
+                  }}
                   className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-semibold text-secondary hover:text-accent transition-colors duration-200 cursor-pointer pt-1"
                   aria-expanded={showAllEvening}
                 >
@@ -143,7 +158,7 @@ export default function Timings({
                   </svg>
                 </button>
               </div>
-            </div>
+            </Link>
           </div>
         </div>
       </div>

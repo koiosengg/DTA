@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
-import logo from "../public/assets/DTA logo.webp";
+import logo from "../public/assets/DTA logo.png";
 // import logo1 from "../public/assets/DTA logo1.webp";
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
@@ -23,15 +23,31 @@ export default function Navbar() {
     };
   }, [isOpen]);
 
+  const handleNavClick = (href: string) => {
+    setIsOpen(false);
+    if (href.includes("#")) {
+      const targetId = href.split("#")[1];
+      if (pathname === "/") {
+        setTimeout(() => {
+          const elem = document.getElementById(targetId);
+          if (elem) {
+            elem.scrollIntoView({ behavior: "smooth" });
+          }
+        }, 100);
+      }
+    }
+  };
+
   const navLinks = [
     { name: "Home", href: "/" },
     { name: "About", href: "/about" },
+    { name: "Testimonials", href: "/#testimonials" },
   ];
 
   return (
     <>
-      <header className="sticky top-0 z-50 w-full transition-all duration-300 bg-white h-14 md:h-16 px-5 sm:px-8 md:px-12 lg:px-20 flex items-center border-b border-zinc-100">
-        <div className="flex items-center justify-between w-screen relative h-full">
+      <header className="sticky top-0 z-50 w-full transition-all duration-300 bg-white h-20 px-5 sm:px-8 min-[1200px]:px-20 flex items-center border-b border-zinc-100">
+        <div className="flex items-center justify-between w-full relative h-full">
           {/* Logo */}
           <div className="shrink-0 flex items-center">
             <Link href="/" className="flex items-center gap-1.25 group">
@@ -39,7 +55,7 @@ export default function Navbar() {
                 src={logo}
                 alt="DTA Logo Mark"
                 priority
-                className="w-auto h-14 object-cover"
+                className="w-auto h-18 object-cover"
               />
               {/* <Image
                 src={logo1}
@@ -51,13 +67,19 @@ export default function Navbar() {
           </div>
 
           {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center gap-6 h-full">
+          <nav className="hidden min-[1200px]:flex items-center gap-6 h-full">
             {navLinks.map((link) => {
+              const isActive = pathname === link.href;
               return (
                 <Link
                   key={link.name}
                   href={link.href}
-                  className="relative flex items-center py-1 transition-colors duration-200 text-primary hover:text-accent font-primary text-md font-medium"
+                  onClick={() => handleNavClick(link.href)}
+                  className={`relative flex items-center py-1 transition-colors duration-200 font-primary text-md ${
+                    isActive
+                      ? "text-accent font-semibold"
+                      : "text-primary hover:text-accent font-medium"
+                  }`}
                 >
                   {link.name}
                 </Link>
@@ -178,10 +200,10 @@ export default function Navbar() {
           </nav>
 
           {/* Desktop Actions */}
-          <div className="hidden md:flex items-center gap-4">
+          <div className="hidden min-[1200px]:flex items-center gap-4">
             <Link
               href="/contact"
-              className="text-base font-bold text-white transition-all duration-200 hover:opacity-90 active:scale-95 shadow-md shadow-red-600/10 hover:shadow-lg hover:shadow-red-600/20 flex items-center justify-center px-5 h-10 md:h-11 gap-2 rounded-lg bg-accent backdrop-blur-[20px]"
+              className="text-base font-bold text-white transition-all duration-200 hover:opacity-90 active:scale-95 shadow-md shadow-red-600/10 hover:shadow-lg hover:shadow-red-600/20 flex items-center justify-center px-5 h-10 min-[1200px]:h-11 gap-2 rounded-lg bg-accent backdrop-blur-[20px]"
             >
               Get Started
               <svg
@@ -201,7 +223,7 @@ export default function Navbar() {
           </div>
 
           {/* Mobile Menu Button */}
-          <div className="flex md:hidden items-center">
+          <div className="flex min-[1200px]:hidden items-center">
             <button
               onClick={() => setIsOpen(!isOpen)}
               type="button"
@@ -244,7 +266,7 @@ export default function Navbar() {
         </div>
         {/* Mobile Full-Screen White Drawer */}
         {isOpen && (
-          <div className="fixed top-12 left-0 right-0 bottom-0 h-[calc(100dvh-3rem)] bg-white z-50 flex flex-col justify-between p-6 md:hidden overflow-y-auto border-t border-zinc-100 animate-in fade-in duration-200">
+          <div className="fixed top-20 left-0 right-0 bottom-0 h-[calc(100dvh-5rem)] bg-white z-50 flex flex-col justify-between p-6 min-[1200px]:hidden overflow-y-auto border-t border-zinc-100 animate-in fade-in duration-200">
             <div className="flex flex-col gap-3">
               {navLinks.map((link) => {
                 const isActive = pathname === link.href;
@@ -252,7 +274,7 @@ export default function Navbar() {
                   <Link
                     key={link.name}
                     href={link.href}
-                    onClick={() => setIsOpen(false)}
+                    onClick={() => handleNavClick(link.href)}
                     className={`flex items-center px-4 py-3 text-lg font-semibold rounded-xl transition-all duration-200 ${
                       isActive
                         ? "bg-accent/10 text-accent font-bold"

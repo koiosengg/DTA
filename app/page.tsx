@@ -1,4 +1,3 @@
-import Link from "next/link";
 import Banner from "@/components/Home/Banner";
 import Stats from "@/components/Home/Stats";
 import MartialArts from "@/components/Home/MartialArts";

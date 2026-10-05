@@ -3,13 +3,11 @@ import Champions from "@/components/Home/Champions";
 import Authority from "@/components/Home/Authority";
 // import AudienceBanner from "@/components/Home/AudienceBanner";
 import Learn from "@/components/Home/Learn";
-import MartialArts from "@/components/Home/MartialArts";
+import Reels from "@/components/About/Reels";
 import Journey from "@/components/Home/Journey";
-import Timings from "@/components/Home/Timings";
 import PhotoScrollSection from "@/components/Home/PhotoScrollSection";
 import Testimonial from "@/components/Home/Testimonial";
 import aboutBannerImg from "@/public/assets/About/Banner/AboutBanner.jpg";
-import HorizontalScroll from "@/components/HorizontalScroll";
 
 export default function About() {
   return (
@@ -31,13 +29,11 @@ export default function About() {
           "From young children taking their first kick to adults transforming their fitness and confidence, our mission remains the same: To create stronger bodies, sharper minds, and fearless individuals.",
         ]}
       />
-      <HorizontalScroll />
+      <Learn />
       <Authority />
       {/* <AudienceBanner /> */}
-      <Learn />
-      <MartialArts />
+      <Reels />
       <Journey />
-      <Timings />
       <PhotoScrollSection />
       <Testimonial />
     </div>

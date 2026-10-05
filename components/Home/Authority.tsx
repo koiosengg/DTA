@@ -58,19 +58,22 @@ export default function Authority({
         {/* Logos Container */}
         <div className="w-full flex flex-col md:flex-row gap-12 justify-around items-center">
           {logos.map((logo, index) => (
-            <div
+            <a
               key={index}
-              className="cursor-pointer"
-              onClick={() => logo.link && window.open(logo.link, "_blank")}
+              href={logo.link || "#"}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label={logo.alt}
+              className="group relative p-4 sm:p-6 rounded-2xl bg-white border border-transparent hover:border-zinc-200 hover:shadow-xl hover:shadow-zinc-200/50 hover:-translate-y-1 transition-all duration-300 flex items-center justify-center focus-visible:ring-2 focus-visible:ring-[#D61F26] focus-visible:outline-none"
             >
               <Image
                 src={logo.src}
                 alt={logo.alt}
                 width={logo.width || 296}
                 height={logo.height || 167}
-                className="object-contain"
+                className="object-contain transition-transform duration-300 group-hover:scale-105"
               />
-            </div>
+            </a>
           ))}
         </div>
       </div>

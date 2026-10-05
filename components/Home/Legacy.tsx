@@ -3,7 +3,7 @@
 import React from "react";
 import Image from "next/image";
 // import trophyImg from "@/public/assets/Home/Legacy/trophy.webp";
-import trophyImg1 from "@/public/assets/Home/Legacy/trophy1.jpeg";
+import trophyImg1 from "@/public/assets/Home/Legacy/trophy1.png";
 import indianFlagImg from "@/public/assets/Home/Legacy/india.webp";
 const legacyAchievements = [
   {
@@ -3633,15 +3633,9 @@ export default function Legacy() {
       </div>
 
       {/* Right Column: Gradient Promo */}
-      <div
-        className="w-full lg:w-1/2 px-5 py-14 lg:py-0 lg:pl-5 flex flex-col justify-between items-start text-white min-h-125 lg:min-h-0 relative overflow-hidden"
-        style={{
-          background:
-            "linear-gradient(216deg, #5A06BF 0%, #F23000 36.56%, #D30008 56.27%, #8D070D 100%)",
-        }}
-      >
+      <div className="w-full lg:w-1/2 px-5 py-14 lg:py-0 lg:pl-5 flex flex-col justify-center items-start text-white min-h-180 lg:min-h-0 relative overflow-hidden">
         {/* Large overlay title */}
-        <div className="max-w-100 flex flex-col gap-4 z-10 pt-14 lg:pt-0 lg:my-auto">
+        <div className="max-w-100 flex flex-col gap-4 relative z-10 pt-14 lg:pt-0">
           <h3 className="lg:text-[40px] text-[32px] font-bold font-sora leading-none text-[#FFF700] lg:tracking-[-1.6px]">
             100+ Medals. <br />
             <span className=" text-white">
@@ -3652,13 +3646,15 @@ export default function Legacy() {
         </div>
 
         {/* Large Decorative Trophy image */}
-        <div className="relative  h-auto pointer-events-none sm:self-end lg:absolute lg:inset-0 lg:w-full lg:h-full">
+        <div className="absolute inset-0 w-full h-full pointer-events-none z-0">
           <Image
             src={trophyImg1}
             alt="Trophy"
             fill
-            className="object-contain object-bottom-right"
+            className="object-cover object-bottom-right"
           />
+          {/* Dark overlay */}
+          <div className="absolute inset-0 bg-black/40" />
         </div>
       </div>
     </section>

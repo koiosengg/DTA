@@ -5,14 +5,11 @@ import Link from "next/link";
 import Image, { StaticImageData } from "next/image";
 import championsImage from "@/public/assets/Home/Champions/Image.webp";
 import championsImage2 from "@/public/assets/Home/Champions/Image2.jpeg";
-import championsImage3 from "@/public/assets/Home/Champions/Image3.jpeg";
-import championsImage4 from "@/public/assets/Home/Champions/Image4.jpeg";
-import championsImage5 from "@/public/assets/Home/Champions/Image5.jpeg";
-import championsImage6 from "@/public/assets/Home/Champions/Image6.jpeg";
-import championsImage7 from "@/public/assets/Home/Champions/Image7.jpeg";
-import championsImage8 from "@/public/assets/Home/Champions/image8.jpeg";
-import championsImage9 from "@/public/assets/Home/Champions/image9.jpg";
-import championsImage10 from "@/public/assets/Home/Champions/image10.jpg";
+import championsImage3 from "@/public/assets/Home/Champions/Image3.png";
+import championsImage4 from "@/public/assets/Home/Champions/Image4.png";
+import championsImage5 from "@/public/assets/Home/Champions/Image5.png";
+import championsImage6 from "@/public/assets/Home/Champions/Image6.png";
+import championsImage7 from "@/public/assets/Home/Champions/Image7.png";
 
 interface ChampionsProps {
   title?: string;
@@ -33,9 +30,6 @@ const championImages = [
   championsImage5,
   championsImage6,
   championsImage7,
-  championsImage8,
-  championsImage9,
-  championsImage10,
 ];
 
 export default function Champions({

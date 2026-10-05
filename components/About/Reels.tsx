@@ -1,69 +1,113 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
-import Image, { StaticImageData } from "next/image";
-import image1 from "@/public/assets/Home/MartialArts/image1.png";
-import image2 from "@/public/assets/Home/MartialArts/image2.jpeg";
-import image3 from "@/public/assets/Home/MartialArts/image3.png";
-import image4 from "@/public/assets/Home/MartialArts/image4.png";
-import image5 from "@/public/assets/Home/MartialArts/image5.png";
-import image6 from "@/public/assets/Home/MartialArts/image6.webp";
 
-interface Program {
-  title: string;
-  desc: string;
-  image: string | StaticImageData;
+interface ReelItem {
+  id: number;
+  src: string;
+  instagramUrl?: string;
 }
 
-interface MartialArtsProps {
-  title?: string;
-  subtitle?: string;
-  programs?: Program[];
-}
-
-const martialArtsPrograms = [
+const defaultReels: ReelItem[] = [
   {
-    title: "Taekwondo Training",
-    desc: "Master authentic Korean martial arts techniques with structured progression like basic techniques, kicks and strikes, sparring drills, discipline training",
-    image: image1,
+    id: 1,
+    src: "/assets/About/Reels/Video-1.mp4",
+    instagramUrl: "https://www.instagram.com/dta_india/",
   },
   {
-    title: "Self Defence Training",
-    desc: "Learn practical, real-life self-defense skills that build confidence, improve personal safety, and prepare women, professionals, teenagers, and beginners to handle everyday situations effectively.",
-    image: image2,
+    id: 2,
+    src: "/assets/About/Reels/Video-2.mp4",
+    instagramUrl: "https://www.instagram.com/dta_india/",
   },
   {
-    title: "Poomsae Training",
-    desc: "Master traditional Taekwondo forms with precision, balance, control, and disciplined movement through structured practice and progressive training.",
-    image: image3,
+    id: 3,
+    src: "/assets/About/Reels/Video-3.mp4",
+    instagramUrl: "https://www.instagram.com/dta_india/",
   },
   {
-    title: "Kyorugi Training",
-    desc: "Olympic-style sparring focused on speed, strategy, agility, quick decision-making, and competition readiness through structured training and real-match scenarios.",
-    image: image4,
+    id: 4,
+    src: "/assets/About/Reels/Video-4.mp4",
+    instagramUrl: "https://www.instagram.com/dta_india/",
   },
   {
-    title: "Basic Gymnastics",
-    desc: "Improve flexibility, coordination, body balance, and athletic movement.",
-    image: image5,
+    id: 5,
+    src: "/assets/About/Reels/Video-5.mp4",
+    instagramUrl: "https://www.instagram.com/dta_india/",
   },
   {
-    title: "Fitness & Weight Management",
-    desc: "Adult fitness sessions includes,light weight training,cardio conditioning, fat loss training, strength building and mobility work.",
-    image: image6,
+    id: 6,
+    src: "/assets/About/Reels/Video-1.mp4",
+    instagramUrl: "https://www.instagram.com/dta_india/",
+  },
+  {
+    id: 7,
+    src: "/assets/About/Reels/Video-2.mp4",
+    instagramUrl: "https://www.instagram.com/dta_india/",
+  },
+  {
+    id: 8,
+    src: "/assets/About/Reels/Video-3.mp4",
+    instagramUrl: "https://www.instagram.com/dta_india/",
+  },
+  {
+    id: 9,
+    src: "/assets/About/Reels/Video-4.mp4",
+    instagramUrl: "https://www.instagram.com/dta_india/",
+  },
+  {
+    id: 10,
+    src: "/assets/About/Reels/Video-5.mp4",
+    instagramUrl: "https://www.instagram.com/dta_india/",
   },
 ];
 
-export default function MartialArts({
-  title = "Complete Training Under One Roof",
-  subtitle = "Expert-led training in Taekwondo, self-defence, poomsae, kyorugi, fitness, and gymnastics tailored for kids, teens, adults, and working professionals.",
-  programs = martialArtsPrograms,
-}: MartialArtsProps) {
+
+function VideoCard({ reel }: { reel: ReelItem }) {
+  const videoRef = useRef<HTMLVideoElement>(null);
+
+  return (
+    <div
+      className="shrink-0 relative rounded-xl overflow-hidden bg-black shadow-md border border-zinc-200 group cursor-pointer"
+      style={{ width: 225, height: 400, minWidth: 225, maxWidth: 225 }}
+    >
+      {/* Video Element */}
+      <video
+        ref={videoRef}
+        src={reel.src}
+        style={{
+          position: "absolute",
+          top: 0,
+          left: 0,
+          width: "100%",
+          height: "100%",
+          objectFit: "cover",
+        }}
+        loop
+        playsInline
+        preload="metadata"
+        autoPlay
+        muted
+      />
+    </div>
+  );
+}
+
+interface ReelsProps {
+  title?: string;
+  subtitle?: string;
+  reels?: ReelItem[];
+}
+
+export default function Reels({
+  title = "Life at Deccan Taekwondo Academy",
+  subtitle = "Catch the daily training energy, kicks, student transformations, and masterclass moments on Instagram.",
+  reels = defaultReels,
+}: ReelsProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const trackRef = useRef<HTMLDivElement>(null);
   const [scrollX, setScrollX] = useState(0);
   const [maxScroll, setMaxScroll] = useState(0);
-  const [stepWidth, setStepWidth] = useState(494); // default desktop card + gap (474 + 20)
+  const [stepWidth, setStepWidth] = useState(200);
 
   const updateScrollBounds = () => {
     if (containerRef.current && trackRef.current) {
@@ -80,8 +124,8 @@ export default function MartialArts({
 
       const firstChild = trackRef.current.firstElementChild as HTMLElement;
       if (firstChild) {
-        const cardWidth = firstChild.clientWidth;
-        setStepWidth(cardWidth + 20); // card width + gap (20px)
+        const cardWidth = firstChild.clientWidth || 185;
+        setStepWidth(cardWidth + 16);
       }
     }
   };
@@ -120,45 +164,22 @@ export default function MartialArts({
         </div>
         <div
           ref={containerRef}
-          className="w-full flex flex-col gap-6 overflow-visible relative pr-0"
+          className="w-full flex flex-col gap-12 overflow-visible relative pr-0"
         >
           {/* Inner Cards flex container */}
           <div
             ref={trackRef}
-            className="flex gap-5 transition-[left] duration-500 ease-in-out relative [--card-width:280px] sm:[--card-width:380px] lg:[--card-width:474px] lg:pl-0"
+            className="flex gap-4 transition-[left] duration-500 ease-in-out relative lg:pl-0"
             style={{
               left: `-${scrollX}px`,
             }}
           >
-            {programs.map((program, idx) => (
-              <div
-                key={idx}
-                className="shrink-0 flex flex-col gap-4 text-left"
-                style={{ width: "var(--card-width)" }}
-              >
-                {/* Image Wrapper */}
-                <div className="relative aspect-414/277 w-full rounded-lg overflow-hidden ">
-                  <Image
-                    src={program.image}
-                    alt={program.title}
-                    fill
-                    className="object-cover"
-                  />
-                </div>
-                {/* Content Wrapper */}
-                <div className="flex flex-col gap-2">
-                  <h3 className="lg:text-2xl text-xl font-bold font-primary text-primary leading-tight">
-                    {program.title}
-                  </h3>
-                  <p className="lg:text-lg text-md text-secondary leading-relaxed font-primary font-medium">
-                    {program.desc}
-                  </p>
-                </div>
-              </div>
+            {reels.map((reel) => (
+              <VideoCard key={reel.id} reel={reel} />
             ))}
           </div>
 
-          {/* Navigation Arrows at Bottom Center (centered on mobile, layout-aligned on desktop) */}
+          {/* Navigation Arrows */}
           <div className="w-full flex justify-center items-center gap-1">
             <button
               onClick={handlePrev}

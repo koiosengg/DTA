@@ -1,8 +1,13 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Image from "next/image";
-import contactBannerImg from "@/public/assets/Contact/Image.jpeg";
+import img1 from "@/public/assets/Contact/Image.png";
+import img2 from "@/public/assets/Contact/Image1.png";
+import img3 from "@/public/assets/Contact/Image2.png";
+import img4 from "@/public/assets/Contact/Image3.png";
+
+const bannerImages = [img1, img2, img3, img4];
 
 export default function ContactBanner() {
   const [formData, setFormData] = useState({
@@ -14,14 +19,68 @@ export default function ContactBanner() {
     message: "",
   });
   const [submitted, setSubmitted] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [currentImgIndex, setCurrentImgIndex] = useState(0);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentImgIndex((prev) => (prev + 1) % bannerImages.length);
+    }, 3500);
+    return () => clearInterval(timer);
+  }, []);
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setSubmitted(true);
-    setTimeout(() => {
-      setSubmitted(false);
-      setFormData({ name: "", email: "", mobile: "", topic: "", otherTopic: "", message: "" });
-    }, 3000);
+    setLoading(true);
+    setError(null);
+
+    try {
+      const response = await fetch("https://formspree.io/f/xeaejyvp", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        body: JSON.stringify({
+          name: formData.name,
+          email: formData.email,
+          mobile: formData.mobile,
+          topic:
+            formData.topic === "Other" && formData.otherTopic
+              ? `Other: ${formData.otherTopic}`
+              : formData.topic,
+          message: formData.message,
+        }),
+      });
+
+      if (response.ok) {
+        setSubmitted(true);
+        setFormData({
+          name: "",
+          email: "",
+          mobile: "",
+          topic: "",
+          otherTopic: "",
+          message: "",
+        });
+      } else {
+        const data = await response.json();
+        if (data && data.errors && Array.isArray(data.errors)) {
+          setError(
+            data.errors
+              .map((err: { message?: string }) => err.message || "Error")
+              .join(", ")
+          );
+        } else {
+          setError("Failed to send message. Please try again later.");
+        }
+      }
+    } catch {
+      setError("Network error. Please check your connection and try again.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   const topics = [
@@ -57,9 +116,9 @@ export default function ContactBanner() {
           </div>
 
           {submitted ? (
-            <div className="rounded-xl bg-emerald-50 border border-emerald-200 p-8 text-center">
+            <div className="rounded-xl bg-emerald-50 border border-emerald-200 p-8 text-center flex flex-col items-center gap-3">
               <svg
-                className="mx-auto h-12 w-12 text-emerald-500 mb-3"
+                className="mx-auto h-12 w-12 text-emerald-500"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -71,15 +130,33 @@ export default function ContactBanner() {
                   d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
                 />
               </svg>
-              <h3 className="text-base font-semibold text-emerald-800">
+              <h3 className="text-lg font-semibold text-emerald-800">
                 Message Sent!
               </h3>
-              <p className="mt-1 text-xs text-emerald-600">
-                We&apos;ll get back to you shortly.
+              <p className="text-sm text-emerald-600">
+                Thank you for reaching out. We&apos;ll get back to you shortly.
               </p>
+              <button
+                type="button"
+                onClick={() => setSubmitted(false)}
+                className="mt-3 inline-flex items-center px-4 py-2 border border-emerald-600 text-sm font-medium rounded-md text-emerald-700 bg-white hover:bg-emerald-50 transition cursor-pointer"
+              >
+                Send Another Message
+              </button>
             </div>
           ) : (
-            <form onSubmit={handleSubmit} className="flex flex-col gap-6">
+            <form
+              action="https://formspree.io/f/xeaejyvp"
+              method="POST"
+              onSubmit={handleSubmit}
+              className="flex flex-col gap-6"
+            >
+              {error && (
+                <div className="rounded-md bg-red-50 border border-red-200 p-3 text-sm text-red-600">
+                  {error}
+                </div>
+              )}
+
               {/* Full Name */}
               <div className=" flex flex-col gap-2">
                 <label
@@ -90,6 +167,7 @@ export default function ContactBanner() {
                 </label>
                 <input
                   type="text"
+                  name="name"
                   id="banner-name"
                   required
                   value={formData.name}
@@ -111,6 +189,7 @@ export default function ContactBanner() {
                 </label>
                 <input
                   type="email"
+                  name="email"
                   id="banner-email"
                   required
                   value={formData.email}
@@ -132,6 +211,7 @@ export default function ContactBanner() {
                 </label>
                 <input
                   type="tel"
+                  name="mobile"
                   id="banner-mobile"
                   required
                   value={formData.mobile}
@@ -153,6 +233,7 @@ export default function ContactBanner() {
                 </label>
                 <div className="relative">
                   <select
+                    name="topic"
                     id="banner-topic"
                     required
                     value={formData.topic}
@@ -174,6 +255,7 @@ export default function ContactBanner() {
                 {formData.topic === "Other" && (
                   <input
                     type="text"
+                    name="otherTopic"
                     id="banner-other-topic"
                     required
                     value={formData.otherTopic}
@@ -195,6 +277,7 @@ export default function ContactBanner() {
                   Message
                 </label>
                 <textarea
+                  name="message"
                   id="banner-message"
                   rows={4}
                   value={formData.message}
@@ -209,25 +292,49 @@ export default function ContactBanner() {
               {/* Submit */}
               <button
                 type="submit"
-                className="w-full bg-accent text-white font-semibold py-3 rounded-md text-sm hover:bg-accent/90 active:scale-[0.98] transition-all duration-200 cursor-pointer"
+                disabled={loading}
+                className="w-full bg-accent text-white font-semibold py-3 rounded-md text-sm hover:bg-accent/90 active:scale-[0.98] transition-all duration-200 cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
               >
-                Submit
+                {loading ? "Submitting..." : "Submit"}
               </button>
             </form>
           )}
         </div>
       </div>
 
-      {/* Right Panel – Image */}
-      <div className="relative w-full sm:max-w-none md:max-w-none h-132 aspect-49/69 mx-auto lg:w-1/2 lg:max-w-none lg:h-auto lg:aspect-auto self-stretch">
-        <Image
-          src={contactBannerImg}
-          alt="Deccan Taekwondo Academy Martial Artist"
-          fill
-          priority
-          placeholder="blur"
-          className="object-cover h-full w-full"
-        />
+      {/* Right Panel – Image Slideshow */}
+      <div className="relative w-full sm:max-w-none md:max-w-none h-132 aspect-49/69 mx-auto lg:w-1/2 lg:max-w-none lg:h-auto lg:aspect-auto self-stretch overflow-hidden">
+        {bannerImages.map((img, idx) => (
+          <Image
+            key={idx}
+            src={img}
+            alt={`Deccan Taekwondo Academy Martial Artist ${idx + 1}`}
+            fill
+            priority={idx === 0}
+            className={`object-cover h-full w-full transition-opacity duration-1000 ease-in-out ${
+              idx === currentImgIndex
+                ? "opacity-100"
+                : "opacity-0 pointer-events-none"
+            }`}
+          />
+        ))}
+
+        {/* Slide Indicator Dots */}
+        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex items-center gap-2 z-10">
+          {bannerImages.map((_, idx) => (
+            <button
+              key={idx}
+              type="button"
+              onClick={() => setCurrentImgIndex(idx)}
+              aria-label={`Go to slide ${idx + 1}`}
+              className={`h-2 rounded-full transition-all duration-300 cursor-pointer ${
+                idx === currentImgIndex
+                  ? "w-6 bg-white"
+                  : "w-2 bg-white/50 hover:bg-white/75"
+              }`}
+            />
+          ))}
+        </div>
       </div>
     </section>
   );

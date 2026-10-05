@@ -64,6 +64,104 @@ const defaultTestimonials: TestimonialItem[] = [
     date: "Verified Google Review",
     text: "Top class training facility, clean environment, and very supportive masters. My son loves attending every single class. 5 stars without a doubt for Deccan Taekwondo Academy!",
   },
+  {
+    author: "Sunita & Mahesh Patel",
+    role: "Parents",
+    rating: 5,
+    date: "Verified Google Review",
+    text: "Both our kids have been training under the masters here for over 2 years now. The focus on values, respect, and physical stamina is outstanding. Best academy in the region!",
+  },
+  {
+    author: "Aditya Hegde",
+    role: "Student",
+    rating: 5,
+    date: "Verified Google Review",
+    text: "The high-energy kick training and conditioning workouts here are top tier. Coach pays close attention to detail and stance correction. Truly inspiring environment!",
+  },
+  {
+    author: "Meera Krishnan",
+    role: "Adult Practitioner",
+    rating: 5,
+    date: "Verified Google Review",
+    text: "Joined the morning adult fitness and self-defense batch. It has completely transformed my daily routine and energy levels. Friendly coaches and great community!",
+  },
+  {
+    author: "Karthik Gowda",
+    role: "Black Belt Student",
+    rating: 5,
+    date: "Verified Google Review",
+    text: "Trained here from green belt all the way to black belt. The championship preparation and state-level tournament guidance provided by the Master is exceptional.",
+  },
+  {
+    author: "Deepa Ramanathan",
+    role: "Parent",
+    rating: 5,
+    date: "Verified Google Review",
+    text: "Extremely safe, encouraging, and structured environment for young children. My daughter has become so much more focused and agile since she started training at DTA.",
+  },
+  {
+    author: "Manoj Kumar",
+    role: "Fitness Enthusiast",
+    rating: 5,
+    date: "Verified Google Review",
+    text: "If you want real functional strength, flexibility, and practical defense skills, Deccan Taekwondo Academy is the right place. Highly dedicated team of coaches.",
+  },
+  {
+    author: "Priya Sharma",
+    role: "Parent",
+    rating: 5,
+    date: "Verified Google Review",
+    text: "Very punctual batch timings, spacious wooden flooring/mats setup, and very professional management. My kids never want to miss a single class!",
+  },
+  {
+    author: "Varun Deshmukh",
+    role: "Student",
+    rating: 5,
+    date: "Verified Google Review",
+    text: "The Poomsae forms and sparring techniques taught here are very authentic. The instructors build strong discipline while keeping the classes super engaging.",
+  },
+  {
+    author: "Sangeetha Nair",
+    role: "Adult Beginner",
+    rating: 5,
+    date: "Verified Google Review",
+    text: "Never thought I could start martial arts in my late 20s, but the masters tailored the flexibility and cardio routines so well. Best decision ever!",
+  },
+  {
+    author: "Rahul Sengupta",
+    role: "Parent",
+    rating: 5,
+    date: "Verified Google Review",
+    text: "Excellent focus on mental grit and physical endurance. The belt examination events are conducted with supreme standards and Korean Taekwondo ethics.",
+  },
+  {
+    author: "Kavya Reddy",
+    role: "Martial Arts Student",
+    rating: 5,
+    date: "Verified Google Review",
+    text: "Amazing atmosphere, great peer support, and top coaching staff. My kicking power and flexibility have improved beyond my expectations!",
+  },
+  {
+    author: "Vigneshwaran K",
+    role: "Trainee",
+    rating: 5,
+    date: "Verified Google Review",
+    text: "DTA is more than an academy, it is a family! Masters motivate everyone to reach their personal best. Outstanding academy in Bangalore.",
+  },
+  {
+    author: "Archana & Vikram",
+    role: "Parents",
+    rating: 5,
+    date: "Verified Google Review",
+    text: "Wonderful place for kid overall development! The trainers ensure every child learns self-confidence, agility, and respect alongside kickboxing and Taekwondo.",
+  },
+  {
+    author: "Bharath Srinivas",
+    role: "Black Belt Aspirant",
+    rating: 5,
+    date: "Verified Google Review",
+    text: "Rigorous physical fitness combined with mental discipline. Master's years of expertise really show in every single training session. 5 stars!",
+  },
 ];
 
 function GoogleGLogo() {
@@ -149,9 +247,12 @@ export default function Testimonial({
   };
 
   return (
-    <section className="w-full bg-white py-14 px-5 lg:py-30 lg:px-20 border-zinc-100 flex flex-col gap-12 md:gap-16 overflow-hidden">
+    <section
+      id="testimonials"
+      className="w-full bg-white py-14 px-5 lg:py-30 lg:px-20 border-zinc-100 flex flex-col gap-12 md:gap-16 overflow-hidden items-center"
+    >
       {/* Header Block with Google Review Summary */}
-      <div className="w-full max-w-7xl mx-auto flex flex-col md:flex-row md:items-start justify-between gap-6">
+      <div className="w-full max-w-7xl flex flex-col md:flex-row md:items-start justify-between gap-6">
         <div className="flex flex-col items-start text-left gap-3 max-w-2xl">
           <h2 className="text-[36px] lg:text-[56px] font-bold text-primary tracking-[-1.44px] lg:tracking-tight font-sora leading-[1.15]">
             {title}
@@ -197,7 +298,7 @@ export default function Testimonial({
         {/* Inner Cards flex container */}
         <div
           ref={trackRef}
-          className="flex gap-5 transition-[left] duration-500 ease-in-out relative [--card-width:calc(100vw-40px)] sm:[--card-width:380px] lg:[--card-width:474px] pr-20 pl-0"
+          className="flex gap-5 transition-[left] duration-500 ease-in-out relative pr-20 pl-0"
           style={{
             left: `-${scrollX}px`,
           }}
@@ -205,9 +306,12 @@ export default function Testimonial({
           {items.map((t, idx) => (
             <div
               key={idx}
-              className="shrink-0 flex flex-col gap-5 text-left bg-[#F2F2F2] border border-[#D6D6D6] rounded-lg p-4 justify-between transition-colors duration-300 hover:bg-[#FBE9E9] hover:border-[#EC989B]"
+              className="shrink-0 w-[82vw] max-w-75 sm:w-85 sm:max-w-85 lg:w-105 lg:max-w-105 flex flex-col gap-6 text-left bg-[#F2F2F2] border border-[#D6D6D6] rounded-xl justify-between transition-colors duration-300 hover:bg-[#FBE9E9] hover:border-[#EC989B] p-6 sm:p-7"
               style={{
-                width: "var(--card-width)",
+                width: "min(85vw, 420px)",
+                maxWidth: "420px",
+                padding: "24px",
+                boxSizing: "border-box",
               }}
             >
               <div className="flex flex-col gap-3">
@@ -239,12 +343,7 @@ export default function Testimonial({
         </div>
 
         {/* Navigation Arrows at Bottom Center */}
-        <div
-          className="flex justify-center items-center gap-1"
-          style={{
-            paddingRight: "max(0px, calc((100% - 1280px) / 2))",
-          }}
-        >
+        <div className="flex justify-center items-center gap-1">
           <button
             onClick={handlePrev}
             disabled={scrollX <= 0}

@@ -2,15 +2,16 @@
 
 import React from "react";
 import Image, { StaticImageData } from "next/image";
-import image1 from "@/public/assets/Home/Programs/image1.jpeg";
-import image2 from "@/public/assets/Home/Programs/image2.webp";
-import image3 from "@/public/assets/Home/Programs/image3.jpeg";
-import image4 from "@/public/assets/Home/Programs/image4.webp";
+
+import karateIcon from "@/public/assets/Home/Programs/karate.png";
+import occupationIcon from "@/public/assets/Home/Programs/occupation.png";
+import manIcon from "@/public/assets/Home/Programs/man.png";
+import fitnessIcon from "@/public/assets/Home/Programs/fitness.png";
 
 interface ProgramItem {
   title: string;
   desc: string;
-  image: string | StaticImageData;
+  image: StaticImageData | string;
   isAccent?: boolean;
 }
 
@@ -25,25 +26,25 @@ const defaultPrograms: ProgramItem[] = [
   {
     title: "Kids Taekwondo Classes (Age 3+)",
     desc: "Help your child build: Confidence, discipline, focus, respect, strength, flexibility. Perfect for parents looking for kids martial arts classes in Bangalore.",
-    image: image1,
+    image: karateIcon,
     isAccent: false,
   },
   {
     title: "Teen Martial Arts Training",
     desc: "Build athletic performance, self-confidence, leadership, and competitive spirit. Ideal for school and college students.",
-    image: image2,
+    image: occupationIcon,
     isAccent: false,
   },
   {
     title: "Adult Self Defence & Fitness",
     desc: "Learn practical self defence while improving: Strength, stamina, mobility, weight loss, mental focus. Perfect for working professionals, mothers, and beginners",
-    image: image3,
+    image: manIcon,
     isAccent: true,
   },
   {
     title: "Senior Fitness & Movement Training",
     desc: "Low impact training designed for: mobility, balance, flexibility, functional strength",
-    image: image4,
+    image: fitnessIcon,
     isAccent: false,
   },
 ];
@@ -52,38 +53,39 @@ function HoverRow({ item, idx }: { item: ProgramItem; idx: number }) {
   const [hovered, setHovered] = React.useState(false);
   return (
     <div
-      className="flex items-center text-left"
+      className="flex items-center text-left group transition-all duration-300"
       style={{
-        paddingTop: "24px",
-        paddingBottom: "24px",
         borderTop: idx > 0 ? "1px solid #f2f2f2" : "none",
       }}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
     >
-      {/* Image Container */}
-      <div
-        className="w-37.5 h-37.5 flex items-center justify-center shrink-0 overflow-hidden"
-        style={{ borderRight: "1px solid #f2f2f2" }}
-      >
-        <Image
-          src={item.image}
-          alt={item.title}
-          width={150}
-          height={150}
-          className="object-contain max-w-full max-h-full"
-        />
+      {/* Icon Badge Container */}
+      <div className="w-24 h-24 sm:w-28 sm:h-28 lg:w-32 lg:h-32 rounded-2xl flex items-center justify-center shrink-0 transition-all duration-300">
+        <div className="relative w-16 h-16 sm:w-14 sm:h-14 lg:w-16 lg:h-16 transition-transform duration-300 transform group-hover:scale-110 flex items-center justify-center">
+          <Image
+            src={item.image}
+            alt={item.title}
+            fill
+            className="object-contain transition-all duration-300"
+            style={{
+              filter: hovered
+                ? "invert(18%) sepia(88%) saturate(5940%) hue-rotate(354deg) brightness(91%) contrast(95%)"
+                : "none",
+            }}
+          />
+        </div>
       </div>
 
       {/* Text Content */}
-      <div className="flex flex-col lg:gap-4 gap-2 justify-center pl-6">
+      <div className="flex flex-col lg:gap-3 gap-2 justify-center pl-6 sm:pl-8 flex-1">
         <h3
           className="lg:text-2xl font-bold font-primary leading-tight transition-colors duration-300 text-xl"
           style={{ color: hovered ? "#d61f26" : "#111111" }}
         >
           {item.title}
         </h3>
-        <p className="text-md text-secondary leading-relaxed font-primary font-medium">
+        <p className="text-sm sm:text-base text-secondary leading-relaxed font-primary font-medium">
           {item.desc}
         </p>
       </div>
@@ -94,8 +96,8 @@ function HoverRow({ item, idx }: { item: ProgramItem; idx: number }) {
 export default function Programs({
   title = (
     <>
-      Programs <br />
-      Designed For <br />
+      Programs <br className="hidden lg:inline" />
+      Designed For <br className="hidden lg:inline" />
       Every Age
     </>
   ),
@@ -105,10 +107,11 @@ export default function Programs({
 }: ProgramsProps) {
   return (
     <section
-      className={`w-full bg-white py-14 px-5 lg:py-30 lg:px-20 border-t border-zinc-100 flex justify-center ${className}`}
+      className={`w-full bg-white py-14 px-5 lg:py-30 lg:px-20 flex flex-col gap-12 md:gap-16 overflow-hidden items-center ${className}`}
     >
+      {/* Max 1280px Container */}
       <div className="w-full max-w-7xl flex flex-col lg:flex-row lg:justify-between items-center gap-12">
-        {/* Left Column: Heading & Subtitle */}
+        {/* Left Column Div */}
         <div className="flex flex-col gap-2 text-left w-full lg:w-[40.625%]">
           <h2 className="text-[36px] lg:text-[56px] font-bold text-primary tracking-[-1.44px] lg:tracking-tight font-sora leading-[1.15]">
             {title}
@@ -118,8 +121,8 @@ export default function Programs({
           </p>
         </div>
 
-        {/* Right Column: Stacking Program Rows */}
-        <div className="w-full lg:w-[56.25%] flex flex-col">
+        {/* Right Column Div */}
+        <div className="w-full lg:w-[56.25%] flex flex-col gap-8">
           {items.map((item, idx) => (
             <HoverRow key={idx} item={item} idx={idx} />
           ))}

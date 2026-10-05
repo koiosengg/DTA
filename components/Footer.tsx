@@ -2,12 +2,19 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import logo from "../public/assets/Footer/logo1.webp";
+import logo from "../public/assets/Footer/logo1.png";
 // import logo1 from "../public/assets/Footer/logo2.webp";
 import footerBg from "../public/assets/Footer/Footer.webp";
 import footerRespBg from "../public/assets/Footer/Footer-resp.webp";
 
 export default function Footer() {
+  const navLinks = [
+    { name: "Home", href: "/" },
+    { name: "About", href: "/about" },
+    { name: "Contact", href: "/contact" },
+    { name: "Privacy", href: "/privacy" },
+    { name: "T&C", href: "/terms" },
+  ];
   return (
     <footer className="w-full text-white font-primary bg-white">
       <div className="w-full bg-[#070707] rounded-t-[64px] py-14 px-5 lg:py-30 lg:px-20 flex justify-center relative overflow-hidden">
@@ -37,43 +44,30 @@ export default function Footer() {
           {/* Row 1: Logo and Navigation Links */}
           <div className="w-full flex flex-col md:flex-row justify-between items-center lg:gap-8 gap-11">
             {/* Logo Brand */}
-            <Link href="/" className="flex items-center gap-1.5">
+            <Link
+              href="/"
+              className="flex items-center self-center md:self-auto gap-1.5"
+            >
               <Image
                 src={logo}
                 alt="DTA Logo Mark"
-                className="  w-auto h-15 object-cover"
+                className="object-contain"
+                width={200}
+                height={100}
               />
             </Link>
 
             {/* Navigation Links */}
             <div className="flex flex-wrap justify-center gap-6 text-md font-semibold">
-              <Link href="/" className="hover:text-accent transition-colors">
-                Home
-              </Link>
-              <Link
-                href="/about"
-                className="hover:text-accent transition-colors"
-              >
-                About
-              </Link>
-              <Link
-                href="/contact"
-                className="hover:text-accent transition-colors"
-              >
-                Contact
-              </Link>
-              <Link
-                href="/privacy"
-                className="hover:text-accent transition-colors"
-              >
-                Privacy
-              </Link>
-              <Link
-                href="/terms"
-                className="hover:text-accent transition-colors"
-              >
-                T&C
-              </Link>
+              {navLinks.map((link) => (
+                <Link
+                  key={link.name}
+                  href={link.href}
+                  className="text-white transition-colors hover:text-accent"
+                >
+                  {link.name}
+                </Link>
+              ))}
             </div>
           </div>
 
@@ -111,7 +105,7 @@ export default function Footer() {
 
               {/* Instagram */}
               <a
-                href="https://instagram.com"
+                href="https://www.instagram.com/dta_india/"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center justify-center w-6 h-6 hover:opacity-80 transition-opacity"
@@ -130,28 +124,6 @@ export default function Footer() {
                   />
                 </svg>
               </a>
-
-              {/* X (formerly Twitter) */}
-              <a
-                href="https://twitter.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center justify-center w-6 h-6 hover:opacity-80 transition-opacity"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="24"
-                  height="24"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  className="w-5 h-5"
-                >
-                  <path
-                    d="M18.9 1.125H22.581L14.541 10.338L24 22.875H16.5945L10.794 15.27L4.1565 22.875H0.474L9.0735 13.02L0 1.125H7.5945L12.837 8.0745L18.9 1.125ZM17.61 20.667H19.65L6.4845 3.2175H4.2975L17.61 20.667Z"
-                    fill="white"
-                  />
-                </svg>
-              </a>
             </div>
 
             {/* Credits */}
@@ -161,7 +133,9 @@ export default function Footer() {
                 href="https://www.koiostudio.com"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="hover:underline hover:text-accent transition-colors duration-300 font-semibold"
+                onMouseEnter={(e) => (e.currentTarget.style.color = "#ffbf00")}
+                onMouseLeave={(e) => (e.currentTarget.style.color = "")}
+                className="text-zinc-400 hover:underline transition-colors duration-300 font-semibold"
               >
                 Koiostudio
               </a>
