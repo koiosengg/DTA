@@ -25,7 +25,7 @@ export default function Timings({
   ];
 
   return (
-    <section className="w-full bg-white py-14 lg:py-30 px-5 md:px-12 lg:px-20 overflow-hidden font-primary flex">
+    <section className="w-full bg-white py-14 lg:py-30 px-5 md:px-12 lg:px-20 overflow-hidden font-primary flex justify-center">
       <div className="w-full max-w-7xl flex flex-col gap-18.5 lg:gap-15">
         {/* Header Block */}
         <div className="flex flex-col gap-2 text-left">

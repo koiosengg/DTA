@@ -12,10 +12,12 @@ import Timings from "@/components/Home/Timings";
 import Moments from "@/components/Home/Moments";
 import Testimonial from "@/components/Home/Testimonial";
 import Programs from "@/components/Home/Programs";
+import { HomePageStructuredData } from "@/components/structured-data";
 
 export default function Home() {
   return (
     <div className="relative isolate overflow-hidden bg-[#111] transition-colors duration-300">
+      <HomePageStructuredData />
       <Banner />
       <Stats />
       {/* <AudienceBanner /> */}

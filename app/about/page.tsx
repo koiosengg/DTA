@@ -8,10 +8,12 @@ import Journey from "@/components/Home/Journey";
 import PhotoScrollSection from "@/components/Home/PhotoScrollSection";
 import Testimonial from "@/components/Home/Testimonial";
 import aboutBannerImg from "@/public/assets/About/Banner/AboutBanner.jpg";
+import { AboutPageStructuredData } from "@/components/structured-data";
 
 export default function About() {
   return (
     <div className="relative isolate overflow-x-clip bg-primary transition-colors duration-300">
+      <AboutPageStructuredData />
       {/* Banner Section */}
       <Banner
         title={<>More than Martial Arts, a</>}
