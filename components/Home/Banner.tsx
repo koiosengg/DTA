@@ -54,7 +54,7 @@ export default function Banner({
               fill
               priority
               placeholder={activeResponsiveImage === bannerRespImg ? "blur" : undefined}
-              className="block md:hidden object-cover object-center h-full w-full"
+              className="block md:hidden object-cover object-[center_65%] h-full w-full"
             />
           </>
         ) : (
